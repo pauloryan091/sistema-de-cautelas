@@ -2,63 +2,81 @@ import json
 import os
 import threading
 from datetime import datetime
-from pathlib import Path
+from flask import Flask, render_template_string, request, jsonify, send_from_directory
 
-from flask import Flask, jsonify, request, send_from_directory, render_template
-
-BASE = Path(__file__).resolve().parent
-app = Flask(__name__, template_folder="templates", static_folder="static")
-ARQUIVO_DADOS = BASE / "cautelas.json"
+BASE = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, static_folder=BASE, static_url_path="")
 LOCK = threading.Lock()
+
+# Vercel's deployment directory is read-only. /tmp is writable but temporary:
+# data can disappear on cold starts and is not shared between instances.
+ARQUIVO_INICIAL = os.path.join(BASE, "cautelas.json")
+ARQUIVO_DADOS = os.path.join("/tmp", "enc_mat_1cia_cautelas.json")
+
+
+def garantir_arquivo_dados():
+    if not os.path.exists(ARQUIVO_DADOS):
+        try:
+            with open(ARQUIVO_INICIAL, "r", encoding="utf-8") as origem:
+                dados = json.load(origem)
+            if not isinstance(dados, list):
+                dados = []
+        except (OSError, json.JSONDecodeError):
+            dados = []
+        with open(ARQUIVO_DADOS, "w", encoding="utf-8") as destino:
+            json.dump(dados, destino, ensure_ascii=False, indent=2)
 
 
 def carregar_cautelas():
-    if not ARQUIVO_DADOS.exists():
-        return []
+    garantir_arquivo_dados()
     try:
-        with ARQUIVO_DADOS.open("r", encoding="utf-8") as arquivo:
-            dados = json.load(arquivo)
-            return dados if isinstance(dados, list) else []
+        with open(ARQUIVO_DADOS, "r", encoding="utf-8") as f:
+            dados = json.load(f)
+        return dados if isinstance(dados, list) else []
     except (OSError, json.JSONDecodeError):
-        app.logger.exception("Não foi possível ler cautelas.json")
         return []
 
 
 def salvar_cautelas(cautelas):
-    temporario = ARQUIVO_DADOS.with_suffix(".json.tmp")
-    with temporario.open("w", encoding="utf-8") as arquivo:
-        json.dump(cautelas, arquivo, ensure_ascii=False, indent=2)
+    garantir_arquivo_dados()
+    temporario = ARQUIVO_DADOS + ".tmp"
+    with open(temporario, "w", encoding="utf-8") as f:
+        json.dump(cautelas, f, ensure_ascii=False, indent=2)
     os.replace(temporario, ARQUIVO_DADOS)
 
 
-@app.get("/")
+def ler_html(nome):
+    caminho = os.path.join(BASE, nome)
+    with open(caminho, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@app.route("/")
 def intro():
-    return render_template("index.html")
+    return render_template_string(ler_html("index.html"))
 
 
-@app.get("/dashboard")
+@app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    return render_template_string(ler_html("dashboard.html"))
 
 
-@app.get("/1cia.png")
+@app.route("/1cia.png")
 def logo():
-    # Mantém compatibilidade com os caminhos usados nos HTMLs originais.
-    return send_from_directory(app.static_folder, "1cia.png")
+    return send_from_directory(BASE, "1cia.png")
 
 
-@app.get("/api/cautelas")
+@app.route("/api/cautelas", methods=["GET"])
 def listar():
     with LOCK:
         return jsonify(carregar_cautelas())
 
 
-@app.post("/api/cautelas")
+@app.route("/api/cautelas", methods=["POST"])
 def criar():
     nova = request.get_json(silent=True)
     if not isinstance(nova, dict) or not nova:
         return jsonify({"erro": "Dados inválidos"}), 400
-
     with LOCK:
         cautelas = carregar_cautelas()
         nova["id"] = nova.get("id") or (
@@ -70,7 +88,7 @@ def criar():
     return jsonify(nova), 201
 
 
-@app.delete("/api/cautelas/<cautela_id>")
+@app.route("/api/cautelas/<cautela_id>", methods=["DELETE"])
 def deletar(cautela_id):
     with LOCK:
         cautelas = carregar_cautelas()
@@ -81,10 +99,10 @@ def deletar(cautela_id):
     return jsonify({"ok": True})
 
 
-@app.put("/api/cautelas/<cautela_id>/devolucao")
+@app.route("/api/cautelas/<cautela_id>/devolucao", methods=["PUT"])
 def devolver(cautela_id):
     dados = request.get_json(silent=True)
-    if not isinstance(dados, dict) or not dados:
+    if not isinstance(dados, dict):
         return jsonify({"erro": "Dados inválidos"}), 400
     with LOCK:
         cautelas = carregar_cautelas()
@@ -97,23 +115,22 @@ def devolver(cautela_id):
     return jsonify({"erro": "Cautela não encontrada"}), 404
 
 
-@app.get("/api/backup")
+@app.route("/api/backup", methods=["GET"])
 def backup():
     with LOCK:
         cautelas = carregar_cautelas()
     data_str = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    resposta = app.response_class(
-        response=json.dumps(cautelas, ensure_ascii=False, indent=2),
-        status=200,
-        mimetype="application/json",
+    return (
+        json.dumps(cautelas, ensure_ascii=False, indent=2),
+        200,
+        {
+            "Content-Type": "application/json; charset=utf-8",
+            "Content-Disposition": f'attachment; filename="backup_cautelas_{data_str}.json"',
+        },
     )
-    resposta.headers["Content-Disposition"] = (
-        f'attachment; filename="backup_cautelas_{data_str}.json"'
-    )
-    return resposta
 
 
-@app.post("/api/backup")
+@app.route("/api/backup", methods=["POST"])
 def importar_backup():
     dados = request.get_json(silent=True)
     if not isinstance(dados, list):
@@ -123,7 +140,7 @@ def importar_backup():
         if modo == "mesclar":
             atuais = carregar_cautelas()
             ids_atuais = {c.get("id") for c in atuais}
-            novas = [c for c in dados if isinstance(c, dict) and c.get("id") not in ids_atuais]
+            novas = [c for c in dados if c.get("id") not in ids_atuais]
             todas = novas + atuais
         else:
             todas = dados

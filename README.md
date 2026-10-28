@@ -1,24 +1,44 @@
-# ENC MAT 1ª CIA — Render
+# ENC MAT — 1ª CIA (Vercel)
 
-## Arquivos
-- `app.py`: servidor Flask e API de cautelas.
-- `templates/index.html`: tela inicial.
-- `templates/dashboard.html`: painel principal.
-- `static/1cia.png`: emblema.
-- `cautelas.json`: dados iniciais importados do arquivo enviado.
-- `requirements.txt` e `Procfile`: configuração de execução no Render.
+Projeto Flask preparado para testes na Vercel, mantendo os arquivos visuais originais.
 
-## Publicar no Render
-1. Extraia este ZIP.
-2. Envie o conteúdo da pasta para um repositório GitHub.
-3. No Render, escolha **New + → Web Service** e conecte o repositório.
-4. Build Command: `pip install -r requirements.txt`
-5. Start Command: `gunicorn app:app`
-6. Clique em **Create Web Service**.
+## Publicar pela Vercel
 
-O arquivo `render.yaml` também está incluído para configuração como Blueprint.
+1. Extraia o ZIP.
+2. Crie um repositório no GitHub e envie **os arquivos desta pasta na raiz** do repositório.
+3. Entre em https://vercel.com/ e escolha **Add New → Project**.
+4. Importe o repositório GitHub.
+5. Se a Vercel perguntar o framework, selecione **Flask** ou deixe a detecção automática.
+6. Não precisa configurar Build Command nem Output Directory manualmente. A dependência está em `requirements.txt`.
+7. Clique em **Deploy**.
 
-## Importante sobre os dados
-O serviço usa `cautelas.json` como armazenamento. No Render, o disco do serviço pode ser efêmero; alterações feitas no site podem ser perdidas em novo deploy/reinício. Para manter os dados, configure um Persistent Disk pago montado no serviço e ajuste o caminho de `cautelas.json` para esse disco, ou migre para um banco de dados persistente (por exemplo PostgreSQL).
+Depois da publicação, teste:
+- `/` — tela de abertura
+- `/dashboard` — painel
+- `/api/cautelas` — API de cautelas
 
-O JSON original contém dados pessoais, telefone e imagens de assinaturas. Confirme que você tem autorização para publicar esses dados e não deixe o sistema público sem autenticação se os registros forem restritos. O código original não implementa login.
+## Importante sobre o JSON
+
+Esta versão foi configurada para testes: lê `cautelas.json` como dados iniciais e grava alterações em `/tmp/enc_mat_1cia_cautelas.json`.
+
+**O `/tmp` da Vercel é temporário, pode ser apagado e não é compartilhado entre instâncias.** Portanto, cautelas criadas podem desaparecer após reinicializações/novas instâncias. Não use esta versão para dados reais ou como armazenamento oficial.
+
+O arquivo `cautelas.json` foi iniciado vazio para não publicar os dados pessoais/assinaturas que existiam no arquivo original. Faça backup dos dados originais localmente antes de qualquer migração.
+
+## Testar localmente
+
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+Abra `http://127.0.0.1:5000`.
+
+## Segurança
+
+O projeto não tem autenticação. Use apenas dados fictícios enquanto estiver publicado publicamente.
