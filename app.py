@@ -1,22 +1,25 @@
 import os
 import json
-import sqlite3
 from datetime import datetime
 from flask import Flask, render_template_string, request, jsonify, send_from_directory
+import libsql
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, static_folder=BASE, static_url_path='')
 
-ARQUIVO_DB = os.path.join(BASE, 'cautelas.db')
+TURSO_URL = os.environ.get('TURSO_DATABASE_URL')
+TURSO_TOKEN = os.environ.get('TURSO_AUTH_TOKEN')
 
 
 def conectar():
-    conn = sqlite3.connect(ARQUIVO_DB)
-    conn.row_factory = sqlite3.Row
-    return conn
+    if not TURSO_URL or not TURSO_TOKEN:
+        raise RuntimeError("Turso não configurado. Variáveis TURSO_DATABASE_URL e TURSO_AUTH_TOKEN ausentes.")
+    return libsql.connect(TURSO_URL, auth_token=TURSO_TOKEN)
 
 
 def inicializar_banco():
+    if not TURSO_URL or not TURSO_TOKEN:
+        return
     try:
         conn = conectar()
         conn.execute('''
@@ -27,10 +30,8 @@ def inicializar_banco():
             )
         ''')
         conn.commit()
-        conn.close()
-        print("✅ Banco SQLite inicializado:", ARQUIVO_DB)
     except Exception as e:
-        print("⚠️  Aviso ao inicializar banco:", e)
+        print('Aviso ao inicializar banco:', e)
 
 
 def ler_html(nome):
@@ -59,8 +60,7 @@ def listar():
     try:
         conn = conectar()
         rows = conn.execute('SELECT dados FROM cautelas ORDER BY criado_em DESC').fetchall()
-        conn.close()
-        return jsonify([json.loads(r['dados']) for r in rows])
+        return jsonify([json.loads(r[0]) for r in rows])
     except Exception as e:
         print('ERRO listar:', e)
         return jsonify({'erro': str(e)}), 500
@@ -82,7 +82,6 @@ def criar():
             (nova['id'], json.dumps(nova, ensure_ascii=False))
         )
         conn.commit()
-        conn.close()
         return jsonify(nova), 201
     except Exception as e:
         print('ERRO criar:', e)
@@ -98,9 +97,8 @@ def devolver(cautela_id):
         conn = conectar()
         row = conn.execute('SELECT dados FROM cautelas WHERE id = ?', (cautela_id,)).fetchone()
         if not row:
-            conn.close()
             return jsonify({'erro': 'Cautela não encontrada'}), 404
-        c = json.loads(row['dados'])
+        c = json.loads(row[0])
         c['status'] = 'devolvida'
         c['devolucao'] = dados_dev
         conn.execute(
@@ -108,7 +106,6 @@ def devolver(cautela_id):
             (json.dumps(c, ensure_ascii=False), cautela_id)
         )
         conn.commit()
-        conn.close()
         return jsonify(c)
     except Exception as e:
         print('ERRO devolver:', e)
@@ -120,8 +117,7 @@ def backup():
     try:
         conn = conectar()
         rows = conn.execute('SELECT dados FROM cautelas').fetchall()
-        conn.close()
-        lista = [json.loads(r['dados']) for r in rows]
+        lista = [json.loads(r[0]) for r in rows]
         data_str = datetime.now().strftime('%Y-%m-%d_%H-%M')
         return (
             json.dumps(lista, ensure_ascii=False, indent=2),
@@ -155,7 +151,7 @@ def importar_backup():
                     (c['id'], json.dumps(c, ensure_ascii=False))
                 )
         else:
-            existentes = {r['id'] for r in conn.execute('SELECT id FROM cautelas').fetchall()}
+            existentes = {r[0] for r in conn.execute('SELECT id FROM cautelas').fetchall()}
             for c in dados:
                 if c.get('id') and c['id'] not in existentes:
                     conn.execute(
@@ -163,7 +159,6 @@ def importar_backup():
                         (c['id'], json.dumps(c, ensure_ascii=False))
                     )
         conn.commit()
-        conn.close()
         return jsonify({'ok': True, 'total': len(dados)})
     except Exception as e:
         print('ERRO importar:', e)
