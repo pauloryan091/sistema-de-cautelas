@@ -175,44 +175,112 @@ label .obrig{color:var(--primary-light)}
 .chip.ok{background:rgba(76,175,80,.12);color:var(--ok);border-color:rgba(76,175,80,.3)}
 .acoes-barra{display:flex;gap:10px}
 
-.folha-container{background:rgba(0,0,0,.5);padding:30px 16px;border-radius:var(--radius);
-  margin-bottom:22px;display:flex;justify-content:center;border:1px solid var(--border);perspective:1400px;}
-.folha-preview{background:#fff;color:#000;width:100%;max-width:820px;padding:52px 56px;
-  font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.6);
-  transition:transform .4s cubic-bezier(.175,.885,.32,1.275),box-shadow .4s ease;}
-.folha-preview:hover{transform:rotateX(2deg) rotateY(-1deg) translateY(-2px);box-shadow:0 20px 60px rgba(0,0,0,.7)}
+/* =========================================================
+   FICHA OFICIAL — ajustada para celular e impressão em 1 folha
+   ========================================================= */
+.folha-container{
+  background:rgba(0,0,0,.5);
+  padding:16px;
+  border-radius:var(--radius);
+  margin-bottom:22px;
+  border:1px solid var(--border);
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.folha-preview{
+  background:#fff;
+  color:#000;
+  width:100%;
+  min-width:0;
+  max-width:820px;
+  margin:0 auto;
+  padding:52px 56px;
+  font-family:"Times New Roman",Times,serif;
+  font-size:14pt;
+  line-height:1.55;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  transition:transform .4s cubic-bezier(.175,.885,.32,1.275),box-shadow .4s ease;
+}
+.folha-preview:hover{
+  transform:rotateX(2deg) rotateY(-1deg) translateY(-2px);
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+}
 
 .doc-header{text-align:center;margin-bottom:18px;line-height:1.4}
-.doc-header p{font-weight:bold;font-size:12pt;margin:2px 0;text-transform:uppercase;letter-spacing:.4px}
-.doc-header .sub{font-weight:normal;font-style:italic;font-size:10.5pt;text-transform:none}
-.doc-visto{text-align:right;margin-bottom:14px;font-size:11pt;line-height:1.6}
-.doc-visto img{max-height:55px;max-width:220px;display:inline-block;margin:2px 0}
-.doc-visto .legenda{font-size:10pt;font-style:italic;display:block;margin-top:2px}
-.doc-titulo{text-align:center;font-weight:bold;font-size:14pt;margin:18px 0 14px;text-transform:uppercase;letter-spacing:1.5px}
-.doc-texto{text-align:justify;text-indent:55px;margin-bottom:18px;font-size:11.5pt;line-height:1.6}
+.doc-header p{font-weight:bold;font-size:14pt;margin:2px 0;text-transform:uppercase;letter-spacing:.5px}
+.doc-header .sub{font-weight:normal;font-style:italic;font-size:12pt;text-transform:none}
+
+.doc-visto{text-align:right;margin-bottom:14px;font-size:13pt;line-height:1.6}
+.doc-visto img{max-height:70px;max-width:280px;display:inline-block;margin:4px 0}
+.doc-visto .legenda{font-size:11.5pt;font-style:italic;display:block;margin-top:2px}
+
+.doc-titulo{
+  text-align:center;font-weight:bold;font-size:16pt;
+  margin:18px 0 14px;text-transform:uppercase;letter-spacing:1.8px;
+}
+
+.doc-texto{
+  text-align:justify;text-indent:60px;margin-bottom:18px;
+  font-size:13pt;line-height:1.6;
+}
+
 .doc-tabela{width:100%;border-collapse:collapse;margin-bottom:18px}
-.doc-tabela th,.doc-tabela td{border:1px solid #000;padding:6px 8px;font-size:11pt;height:24px}
-.doc-tabela th{background:#eee;text-align:center;font-weight:bold;font-size:9.5pt;text-transform:uppercase;height:auto;padding:7px 8px}
-.doc-tabela .col-nr{width:44px;text-align:center;font-weight:bold}
-.doc-tabela .col-qtd{width:62px;text-align:center}
-.doc-data{text-align:right;margin-bottom:22px;font-size:11.5pt}
-.doc-aviso{text-align:center;font-style:italic;font-size:10.5pt;margin:14px 0 20px;padding:8px 12px;
-  border:1px dashed #666;border-radius:4px;background:#fafafa;line-height:1.5}
+.doc-tabela th,.doc-tabela td{
+  border:1px solid #000;padding:8px 10px;
+  font-size:13pt;height:26px;
+}
+.doc-tabela th{
+  background:#eee;text-align:center;font-weight:bold;
+  font-size:11.5pt;text-transform:uppercase;
+  height:auto;padding:8px 10px;
+}
+.doc-tabela .col-nr{width:52px;text-align:center;font-weight:bold}
+.doc-tabela .col-qtd{width:70px;text-align:center}
+
+.doc-data{text-align:right;margin-bottom:22px;font-size:13pt}
+
+.doc-aviso{
+  text-align:center;font-style:italic;font-size:11.5pt;
+  margin:14px 0 20px;padding:10px 14px;
+  border:1px dashed #666;border-radius:4px;
+  background:#fafafa;line-height:1.55;
+}
+
 .doc-assinatura{text-align:center;margin-bottom:20px}
-.doc-assinatura img{max-height:60px;max-width:260px;display:block;margin:0 auto}
-.doc-assinatura .linha{width:300px;border-top:1px solid #000;margin:0 auto;padding-top:4px;font-size:11pt}
-.doc-dados{border:1px solid #000;padding:12px 16px;margin-bottom:18px;font-size:10.5pt;line-height:1.6}
-.doc-dados .titulo-dados{font-weight:bold;text-transform:uppercase;font-size:10pt;margin-bottom:8px;letter-spacing:.6px}
+.doc-assinatura img{max-height:70px;max-width:280px;display:block;margin:0 auto}
+.doc-assinatura .linha{
+  width:340px;border-top:1px solid #000;
+  margin:0 auto;padding-top:5px;font-size:13pt;
+}
+
+.doc-dados{
+  border:1px solid #000;padding:12px 18px;margin-bottom:18px;
+  font-size:12.5pt;line-height:1.6;
+}
+.doc-dados .titulo-dados{
+  font-weight:bold;text-transform:uppercase;font-size:11.5pt;
+  margin-bottom:8px;letter-spacing:.6px;
+}
 .doc-dados .linha-dado{margin:4px 0}
-.doc-devolucao{margin-top:18px;font-size:11pt;line-height:1.6}
-.doc-devolucao .titulo-dev{font-weight:bold;text-transform:uppercase;margin-bottom:8px;letter-spacing:.5px;font-size:11pt}
+
+.doc-devolucao{margin-top:18px;font-size:13pt;line-height:1.6}
+.doc-devolucao .titulo-dev{
+  font-weight:bold;text-transform:uppercase;
+  margin-bottom:8px;letter-spacing:.5px;font-size:13pt;
+}
 .doc-devolucao .check{margin:8px 0;letter-spacing:.6px}
-.doc-devolucao .check span{margin-right:24px;display:inline-block}
-.doc-devolucao .linha-alteracao{border-bottom:1px solid #000;min-height:26px;margin:6px 0 16px;padding:2px 4px;font-style:italic}
+.doc-devolucao .check span{margin-right:30px;display:inline-block}
+.doc-devolucao .linha-alteracao{
+  border-bottom:1px solid #000;min-height:28px;
+  margin:6px 0 16px;padding:2px 4px;font-style:italic;
+}
 .doc-assinatura-receb{text-align:center;margin-top:14px}
-.doc-assinatura-receb img{max-height:50px;max-width:250px;display:block;margin:0 auto 2px}
-.doc-assinatura-receb .linha{width:300px;border-top:1px solid #000;margin:0 auto;padding-top:4px;font-size:11pt}
-.doc-assinatura-receb p{margin:3px 0;font-size:10.5pt}
+.doc-assinatura-receb img{max-height:60px;max-width:280px;display:block;margin:0 auto 3px}
+.doc-assinatura-receb .linha{
+  width:340px;border-top:1px solid #000;
+  margin:0 auto;padding-top:5px;font-size:13pt;
+}
+.doc-assinatura-receb p{margin:3px 0;font-size:12.5pt}
 
 .acoes-folha{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 
@@ -234,10 +302,29 @@ label .obrig{color:var(--primary-light)}
 .toast.sucesso{border-color:rgba(76,175,80,.5)}
 .toast.erro{border-color:rgba(255,107,107,.5)}
 
-.folha-dev-container{background:rgba(0,0,0,.5);padding:30px 16px;border-radius:var(--radius);
-  margin-bottom:22px;display:flex;justify-content:center;border:1px solid var(--border);}
-.folha-dev{background:#fff;color:#000;width:100%;max-width:820px;padding:52px 56px;
-  font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.6);}
+/* Termo de Devolução */
+.folha-dev-container{
+  background:rgba(0,0,0,.5);
+  padding:16px;
+  border-radius:var(--radius);
+  margin-bottom:22px;
+  border:1px solid var(--border);
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.folha-dev{
+  background:#fff;
+  color:#000;
+  width:100%;
+  min-width:0;
+  max-width:820px;
+  margin:0 auto;
+  padding:52px 56px;
+  font-family:"Times New Roman",Times,serif;
+  font-size:14pt;
+  line-height:1.55;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
 
 /* MODAL DE ASSINATURA */
 .modal-assinatura{position:fixed;inset:0;z-index:2000;
@@ -320,38 +407,119 @@ label .obrig{color:var(--primary-light)}
   .barra-fixa .container{flex-direction:column;gap:10px;align-items:stretch}
   .acoes-barra{width:100%}
   .acoes-barra .btn{flex:1}
-  .folha-preview,.folha-dev{padding:24px 18px;font-size:11pt}
   .titulo-secao h2{font-size:1.15rem}
   .acoes-folha{flex-direction:column}
   .acoes-folha .btn{width:100%}
+
+  /* Ficha no celular: rolagem horizontal + fonte ajustada */
+  .folha-container,.folha-dev-container{padding:8px}
+  .folha-preview,.folha-dev{
+    padding:32px 24px;
+    font-size:12.5pt;
+    min-width:600px;
+  }
+  .doc-header p{font-size:13pt}
+  .doc-titulo{font-size:15pt}
+  .doc-texto{font-size:12pt}
+  .doc-tabela th,.doc-tabela td{font-size:12pt;padding:6px 8px}
+  .doc-tabela th{font-size:11pt}
+  .doc-dados{font-size:12pt}
+  .doc-devolucao{font-size:12pt}
 }
 
+/* =========================================================
+   IMPRESSÃO — TUDO EM 1 FOLHA A4
+   ========================================================= */
 @media print{
-  @page{size:A4 portrait;margin:15mm 12mm}
-  html,body{background:#fff !important;color:#000 !important;
-    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{
+    size:A4 portrait;
+    margin:10mm 10mm 10mm 10mm;
+  }
+
+  html,body{
+    background:#fff !important;
+    color:#000 !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
   .cabecalho,.barra-fixa,.barra-acoes,.contadores,.acoes-folha,.btn,.rodape,
-  .titulo-secao,.busca-wrap,.aviso-backup,.toast,.modal-assinatura{display:none !important}
-  .app{padding:0 !important;max-width:none !important;margin:0 !important}
+  .titulo-secao,.busca-wrap,.aviso-backup,.toast,.modal-assinatura,
+  #telaDashboard,#telaNova,#telaDevolucao{display:none !important}
+
   section{display:none !important}
   #telaCautela{display:block !important}
   #telaDevDocumento{display:block !important}
-  .folha-container,.folha-dev-container{padding:0 !important;border:none !important;
-    background:none !important;box-shadow:none !important;display:block !important;
-    border-radius:0 !important;perspective:none !important;margin:0 !important}
-  .folha-preview,.folha-dev{box-shadow:none !important;padding:0 !important;
-    max-width:100% !important;width:100% !important;transform:none !important;
-    font-size:12pt !important;line-height:1.5 !important}
-  .folha-preview *,.folha-dev *{-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#000 !important}
-  .doc-header p{font-size:12pt !important}
-  .doc-titulo{font-size:14pt !important}
-  .doc-texto{font-size:11.5pt !important}
-  .doc-tabela th{background:#eee !important;font-size:10pt !important}
-  .doc-tabela td{font-size:11pt !important}
+
+  .app{padding:0 !important;margin:0 !important;max-width:none !important}
+
+  .folha-container,.folha-dev-container{
+    padding:0 !important;border:none !important;background:none !important;
+    box-shadow:none !important;display:block !important;border-radius:0 !important;
+    perspective:none !important;margin:0 !important;overflow:visible !important;
+  }
+
+  .folha-preview,.folha-dev{
+    box-shadow:none !important;
+    padding:0 !important;
+    max-width:100% !important;
+    width:100% !important;
+    min-width:0 !important;
+    transform:none !important;
+    font-size:11pt !important;
+    line-height:1.35 !important;
+  }
+
+  .folha-preview *,.folha-dev *{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    color:#000 !important;
+  }
+
+  .doc-header{margin-bottom:8px !important}
+  .doc-header p{font-size:11pt !important;margin:1px 0 !important}
+  .doc-header .sub{font-size:9.5pt !important}
+
+  .doc-visto{margin-bottom:6px !important;font-size:10pt !important;line-height:1.35 !important}
+  .doc-visto img{max-height:40px !important;max-width:180px !important;margin:1px 0 !important}
+  .doc-visto .legenda{font-size:9pt !important}
+
+  .doc-titulo{font-size:12pt !important;margin:8px 0 6px !important;letter-spacing:1px !important}
+
+  .doc-texto{font-size:10pt !important;line-height:1.35 !important;margin-bottom:8px !important;text-indent:40px !important}
+
+  .doc-tabela{margin-bottom:8px !important}
+  .doc-tabela th,.doc-tabela td{font-size:10pt !important;height:18px !important;padding:3px 6px !important}
+  .doc-tabela th{font-size:9pt !important;padding:4px 6px !important}
+
+  .doc-data{font-size:10pt !important;margin-bottom:8px !important}
+
+  .doc-aviso{font-size:9.5pt !important;padding:5px 8px !important;margin:6px 0 8px !important;line-height:1.35 !important}
+
+  .doc-assinatura{margin-bottom:8px !important;page-break-inside:avoid !important}
+  .doc-assinatura img{max-height:45px !important;max-width:200px !important}
+  .doc-assinatura .linha{width:260px !important;font-size:10pt !important;padding-top:3px !important}
+
+  .doc-dados{padding:6px 10px !important;margin-bottom:8px !important;font-size:10pt !important;line-height:1.35 !important;page-break-inside:avoid !important}
+  .doc-dados .titulo-dados{font-size:9.5pt !important;margin-bottom:4px !important}
+  .doc-dados .linha-dado{margin:2px 0 !important}
+
+  .doc-devolucao{margin-top:8px !important;font-size:10pt !important;line-height:1.35 !important;page-break-inside:avoid !important}
+  .doc-devolucao .titulo-dev{font-size:10pt !important;margin-bottom:4px !important}
+  .doc-devolucao .check{margin:4px 0 !important}
+  .doc-devolucao .linha-alteracao{min-height:18px !important;margin:3px 0 8px !important}
+  .doc-assinatura-receb{margin-top:6px !important}
+  .doc-assinatura-receb img{max-height:40px !important;max-width:200px !important}
+  .doc-assinatura-receb .linha{width:260px !important;font-size:10pt !important;padding-top:3px !important}
+  .doc-assinatura-receb p{font-size:9.5pt !important;margin:2px 0 !important}
+
   .doc-assinatura,.doc-assinatura-receb,
-  .doc-dados,.doc-devolucao{page-break-inside:avoid}
-  .doc-tabela{page-break-inside:auto}
-  tr{page-break-inside:avoid}
+  .doc-dados,.doc-devolucao,.doc-aviso{
+    page-break-inside:avoid !important;
+  }
+  tr{page-break-inside:avoid !important}
 }
 </style>
 </head>
